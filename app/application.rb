@@ -1,25 +1,18 @@
 class Application
-    @@items = ['Apples', 'Carrots', 'Pears']
-  def call(env)
 
+  @@songs = [Song.new("Sorry", "Justin Bieber"),
+            Song.new("Hello","Adele")]
+
+  def call(env)
     resp = Rack::Response.new
     req = Rack::Request.new(env)
 
-    if req.path.match(/items/)
-      @@items.each do |item|
-        resp.write "#{item}\n"
-      end
-    elsif req.path.match(/search/)
+    if req.path.match(/songs/)
 
-      search_term = req.params["q"]
+      song_title = req.path.split("/songs/").last #turn /songs/Sorry into Sorry
+      song = @@songs.find{|s| s.title == song_title}
 
-      if @@items.include?(search_term)
-        resp.write "#{search_term} is one of our items"
-      else
-        resp.write "Couldn't find #{search_term}"
-      end
-    else
-      resp.write "Path Not Found"
+      resp.write song.artist
     end
 
     resp.finish
